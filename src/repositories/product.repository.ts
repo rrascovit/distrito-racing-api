@@ -16,7 +16,21 @@ export class ProductRepository {
       return [];
     }
 
-    return data as Product[];
+    // Filter products by availability (startDate and finalDate)
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+    
+    const availableProducts = (data as Product[]).filter(product => {
+      // If product has no date restrictions, it's always available
+      if (!product.startDate || !product.finalDate) {
+        return true;
+      }
+
+      // Check if today is within the product's sales period
+      // Using string comparison to avoid timezone issues
+      return today >= product.startDate && today <= product.finalDate;
+    });
+
+    return availableProducts;
   }
 
   async findById(id: number): Promise<Product | null> {
