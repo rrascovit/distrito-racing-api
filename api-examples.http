@@ -1,0 +1,254 @@
+###
+# Distrito Racing API - Exemplos de Requisições HTTP
+# Use com a extensão REST Client do VS Code
+###
+
+@baseUrl = http://localhost:3000/api
+@token = seu-token-firebase-aqui
+
+### Health Check
+GET {{baseUrl}}/health
+
+### ===================
+### PROFILES
+### ===================
+
+### Obter meu perfil
+GET {{baseUrl}}/profiles/me
+Authorization: Bearer {{token}}
+
+### Atualizar meu perfil
+PUT {{baseUrl}}/profiles/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "fullname": "João Silva",
+  "username": "joaosilva",
+  "cpf": "12345678900",
+  "phone": "11987654321",
+  "birthdate": "1990-01-15",
+  "emergencyContactName": "Maria Silva",
+  "emergencyContactPhone": "11987654322",
+  "categoryMembership": "Gold",
+  "hasMembership": "true"
+}
+
+### ===================
+### ADDRESSES
+### ===================
+
+### Listar meus endereços
+GET {{baseUrl}}/addresses
+Authorization: Bearer {{token}}
+
+### Obter endereço específico
+GET {{baseUrl}}/addresses/uuid-do-endereco
+Authorization: Bearer {{token}}
+
+### Criar novo endereço
+POST {{baseUrl}}/addresses
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "zipcode": "01310-100",
+  "streetAddress": "Avenida Paulista, 1000",
+  "additionalAddress": "Apto 101",
+  "district": "Bela Vista",
+  "city": "São Paulo",
+  "state": "SP"
+}
+
+### Atualizar endereço
+PUT {{baseUrl}}/addresses/uuid-do-endereco
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "streetAddress": "Avenida Paulista, 2000",
+  "additionalAddress": "Apto 202"
+}
+
+### Deletar endereço
+DELETE {{baseUrl}}/addresses/uuid-do-endereco
+Authorization: Bearer {{token}}
+
+### ===================
+### CARS
+### ===================
+
+### Listar meus carros
+GET {{baseUrl}}/cars
+Authorization: Bearer {{token}}
+
+### Criar novo carro
+POST {{baseUrl}}/cars
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "brand": "Honda",
+  "model": "Civic",
+  "version": "Si",
+  "carClass": "Turismo"
+}
+
+### Atualizar carro
+PUT {{baseUrl}}/cars/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "brand": "Honda",
+  "model": "Civic",
+  "version": "Type R",
+  "carClass": "Turismo A"
+}
+
+### Deletar carro
+DELETE {{baseUrl}}/cars/1
+Authorization: Bearer {{token}}
+
+### ===================
+### EVENTS
+### ===================
+
+### Listar todos os eventos
+GET {{baseUrl}}/events
+
+### Listar eventos futuros
+GET {{baseUrl}}/events/upcoming
+
+### Obter evento específico
+GET {{baseUrl}}/events/1
+
+### Criar novo evento (requer autenticação)
+POST {{baseUrl}}/events
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Track Day Interlagos",
+  "subtitle": "Edição Especial 2024",
+  "shortDescription": "Um dia completo de adrenalina no autódromo de Interlagos",
+  "description": "Descrição completa do evento...",
+  "image": "https://exemplo.com/imagem.jpg",
+  "trackImage": "https://exemplo.com/pista.jpg",
+  "membershipRequired": true,
+  "registrationPossible": true,
+  "lastDay": "2024-12-31",
+  "possibleDays": [
+    { "date": "2024-12-15", "description": "Sábado - Dia completo" },
+    { "date": "2024-12-16", "description": "Domingo - Dia completo" }
+  ]
+}
+
+### Atualizar evento
+PUT {{baseUrl}}/events/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Track Day Interlagos - ATUALIZADO",
+  "registrationPossible": false
+}
+
+### ===================
+### PRODUCTS
+### ===================
+
+### Listar produtos de um evento
+GET {{baseUrl}}/products/event/1
+
+### Obter produto específico
+GET {{baseUrl}}/products/1
+
+### Criar novo produto (requer autenticação)
+POST {{baseUrl}}/products
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "eventId": 1,
+  "name": "Ingresso Early Bird",
+  "priceCents": 50000,
+  "numberDays": 1,
+  "startDate": "2024-12-15",
+  "finalDate": "2024-12-15",
+  "tier": "early-bird",
+  "quantity": 50,
+  "isFirstDriver": true
+}
+
+### Atualizar produto
+PUT {{baseUrl}}/products/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "priceCents": 60000,
+  "quantity": 45
+}
+
+### ===================
+### ORDERS
+### ===================
+
+### Listar meus pedidos
+GET {{baseUrl}}/orders
+Authorization: Bearer {{token}}
+
+### Obter pedido específico
+GET {{baseUrl}}/orders/1
+Authorization: Bearer {{token}}
+
+### Criar novo pedido
+POST {{baseUrl}}/orders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "eventId": 1,
+  "car": "Honda Civic Type R",
+  "carClass": "Turismo A",
+  "number": 77,
+  "days": [
+    { "date": "2024-12-15", "description": "Sábado" }
+  ],
+  "paymentMethod": "pix",
+  "isFirstDriver": true,
+  "productIds": [1, 2]
+}
+
+### Atualizar status de pagamento
+PUT {{baseUrl}}/orders/1/payment
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "isPaid": true
+}
+
+### ===================
+### EXEMPLO COM SEGUNDO PILOTO
+### ===================
+
+### Criar pedido com segundo piloto
+POST {{baseUrl}}/orders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "eventId": 1,
+  "car": "BMW M3",
+  "carClass": "Turismo A",
+  "number": 88,
+  "days": [
+    { "date": "2024-12-15", "description": "Sábado" }
+  ],
+  "paymentMethod": "credit_card",
+  "isFirstDriver": false,
+  "firstDriverName": "Carlos Oliveira",
+  "productIds": [3]
+}
