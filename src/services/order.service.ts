@@ -81,6 +81,10 @@ export class OrderService {
   async checkCarNumberAvailability(eventId: number, number: number): Promise<boolean> {
     return await orderRepository.checkNumberAvailability(eventId, number);
   }
+
+  async getEventRegistrations(eventId: number): Promise<Order[]> {
+    return await orderRepository.findByEventId(eventId);
+  }
 }
 
 export default new OrderService();

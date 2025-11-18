@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import orderController from '../controllers/order.controller';
 import { authenticate } from '../middlewares/auth.middleware';
+import { requireAdmin } from '../middlewares/admin.middleware';
 import { body } from 'express-validator';
 import { handleValidationErrors } from '../middlewares/validation.middleware';
 
@@ -23,6 +24,7 @@ const createOrderValidation = [
 router.get('/', authenticate, orderController.getMyOrders.bind(orderController));
 router.get('/check-registration', authenticate, orderController.checkFirstDriverRegistration.bind(orderController));
 router.get('/check-number', authenticate, orderController.checkCarNumberAvailability.bind(orderController));
+router.get('/event/:eventId', authenticate, requireAdmin, orderController.getEventRegistrations.bind(orderController));
 router.get('/:id', authenticate, orderController.getOrderById.bind(orderController));
 router.post(
   '/',

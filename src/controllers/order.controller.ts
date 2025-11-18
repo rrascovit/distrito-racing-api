@@ -134,6 +134,23 @@ export class OrderController {
       res.status(500).json({ error: 'Erro ao verificar disponibilidade do número' });
     }
   }
+
+  async getEventRegistrations(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const eventId = parseInt(req.params.eventId);
+
+      if (isNaN(eventId)) {
+        res.status(400).json({ error: 'ID do evento inválido' });
+        return;
+      }
+
+      const registrations = await orderService.getEventRegistrations(eventId);
+      res.json(registrations);
+    } catch (error) {
+      console.error('Error getting event registrations:', error);
+      res.status(500).json({ error: 'Erro ao buscar inscrições do evento' });
+    }
+  }
 }
 
 export default new OrderController();
