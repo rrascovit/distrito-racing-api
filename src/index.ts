@@ -1,4 +1,4 @@
-import express, { Application } from 'express';
+import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -29,7 +29,7 @@ class Server {
     // CORS - permitir requisições do frontend Angular
     this.app.use(
       cors({
-        origin: (origin, callback) => {
+        origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
           // Permitir requisições sem origin (mobile apps, Postman, etc.)
           if (!origin) return callback(null, true);
 
@@ -62,7 +62,7 @@ class Server {
     this.app.use('/api', routes);
 
     // Root endpoint
-    this.app.get('/', (req, res) => {
+    this.app.get('/', (req: Request, res: Response) => {
       res.json({
         message: 'Distrito Racing API',
         version: '1.0.0',
