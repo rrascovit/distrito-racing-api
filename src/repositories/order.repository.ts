@@ -76,7 +76,10 @@ export class OrderRepository {
   async findByEventId(eventId: number): Promise<Order[]> {
     const { data, error } = await supabase
       .from(this.tableName)
-      .select('*')
+      .select(`
+        *,
+        profile:profiles!orders_userId_fkey(name, email, phone, cpf)
+      `)
       .eq('eventId', eventId)
       .order('created_at', { ascending: false });
 

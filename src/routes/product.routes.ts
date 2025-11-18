@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import productController from '../controllers/product.controller';
 import { authenticate, optionalAuthenticate } from '../middlewares/auth.middleware';
+import { requireAdmin } from '../middlewares/admin.middleware';
 import { body } from 'express-validator';
 import { handleValidationErrors } from '../middlewares/validation.middleware';
 
@@ -24,11 +25,12 @@ router.get('/:id', optionalAuthenticate, productController.getProductById.bind(p
 router.post(
   '/',
   authenticate,
+  requireAdmin,
   createProductValidation,
   handleValidationErrors,
   productController.createProduct.bind(productController),
 );
-router.put('/:id', authenticate, productController.updateProduct.bind(productController));
-router.delete('/:id', authenticate, productController.deleteProduct.bind(productController));
+router.put('/:id', authenticate, requireAdmin, productController.updateProduct.bind(productController));
+router.delete('/:id', authenticate, requireAdmin, productController.deleteProduct.bind(productController));
 
 export default router;

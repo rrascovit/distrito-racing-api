@@ -1,6 +1,7 @@
 import { Response, Request } from 'express';
 import { AuthRequest } from '../middlewares/auth.middleware';
 import eventRepository from '../repositories/event.repository';
+import orderRepository from '../repositories/order.repository';
 import { CreateEventDto, UpdateEventDto } from '../models/event.model';
 
 export class EventController {
@@ -90,6 +91,53 @@ export class EventController {
     } catch (error) {
       console.error('Error deleting event:', error);
       res.status(500).json({ error: 'Erro ao deletar evento' });
+    }
+  }
+
+  // Admin: Listar inscritos de um evento
+  async getEventRegistrations(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const eventId = parseInt(req.params.id);
+      
+      // Verificar se o evento existe
+      const event = await eventRepository.findById(eventId);
+      if (!event) {
+        res.status(404).json({ error: 'Evento não encontrado' });
+        return;
+      }
+
+      // Buscar todas as inscrições (orders) do evento
+      const registrations = await orderRepository.findByEventId(eventId);
+      
+      res.json({
+        event: {
+          id: event.id,
+          title: event.title,
+          subtitle: event.subtitle,
+        },
+        totalRegistrations: registrations.length,
+        registrations: registrations.map(order => ({
+          id: order.id,
+          createdAt: order.created_at,
+          isPaid: order.isPaid,
+          paymentMethod: order.paymentMethod,
+          car: order.car,
+          carClass: order.carClass,
+          number: order.number,
+          days: order.days,
+          isFirstDriver: order.isFirstDriver,
+          firstDriverName: order.firstDriverName,
+          driver: order.profile ? {
+            name: order.profile.name,
+            email: order.profile.email,
+            phone: order.profile.phone,
+            cpf: order.profile.cpf,
+          } : null,
+        })),
+      });
+    } catch (error) {
+      console.error('Error getting event registrations:', error);
+      res.status(500).json({ error: 'Erro ao buscar inscritos' });
     }
   }
 }

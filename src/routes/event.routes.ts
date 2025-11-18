@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import eventController from '../controllers/event.controller';
 import { authenticate, optionalAuthenticate } from '../middlewares/auth.middleware';
+import { requireAdmin } from '../middlewares/admin.middleware';
 import { body } from 'express-validator';
 import { handleValidationErrors } from '../middlewares/validation.middleware';
 
@@ -26,11 +27,15 @@ router.get('/:id', optionalAuthenticate, eventController.getEventById.bind(event
 router.post(
   '/',
   authenticate,
+  requireAdmin,
   createEventValidation,
   handleValidationErrors,
   eventController.createEvent.bind(eventController),
 );
-router.put('/:id', authenticate, eventController.updateEvent.bind(eventController));
-router.delete('/:id', authenticate, eventController.deleteEvent.bind(eventController));
+router.put('/:id', authenticate, requireAdmin, eventController.updateEvent.bind(eventController));
+router.delete('/:id', authenticate, requireAdmin, eventController.deleteEvent.bind(eventController));
+
+// Rota admin: listar inscritos do evento
+router.get('/:id/registrations', authenticate, requireAdmin, eventController.getEventRegistrations.bind(eventController));
 
 export default router;

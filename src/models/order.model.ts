@@ -5,7 +5,7 @@ export interface Order {
   isPaid: boolean;
   car: string;
   carClass: string;
-  number: number;
+  number?: number | null;
   days: Array<{
     date: string;
     description?: string;
@@ -18,12 +18,18 @@ export interface Order {
   eventName?: string;
   trackName?: string;
   eventDates?: string[];
+  profile?: {
+    name: string;
+    email: string;
+    phone?: string;
+    cpf?: string;
+  };
 }
 
 export interface CreateOrderDto {
   car: string;
   carClass: string;
-  number: number;
+  number?: number | null;
   days: Array<{
     date: string;
     description?: string;
