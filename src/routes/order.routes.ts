@@ -9,8 +9,8 @@ const router = Router();
 
 // Validações
 const createOrderValidation = [
-  body('car').notEmpty().withMessage('Carro é obrigatório'),
-  body('carClass').notEmpty().withMessage('Classe do carro é obrigatória'),
+  body('car').optional({ nullable: true }).isString().withMessage('Carro deve ser uma string quando fornecido'),
+  body('carClass').optional({ nullable: true }).isString().withMessage('Classe do carro deve ser uma string quando fornecida'),
   body('number').optional({ nullable: true }).isInt().withMessage('Número deve ser um inteiro quando fornecido'),
   body('days').isArray().withMessage('Dias é obrigatório'),
   body('paymentMethod').notEmpty().withMessage('Método de pagamento é obrigatório'),

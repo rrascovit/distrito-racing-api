@@ -3,8 +3,8 @@ export interface Order {
   created_at: string;
   userId: string; // UUID
   isPaid: boolean;
-  car: string;
-  carClass: string;
+  car?: string | null;
+  carClass?: string | null;
   number?: number | null;
   days: Array<{
     date: string;
@@ -27,8 +27,8 @@ export interface Order {
 }
 
 export interface CreateOrderDto {
-  car: string;
-  carClass: string;
+  car?: string | null;
+  carClass?: string | null;
   number?: number | null;
   days: Array<{
     date: string;

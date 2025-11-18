@@ -11,6 +11,7 @@ export interface Product {
   paymentLink?: string;
   quantity?: number;
   isFirstDriver: boolean;
+  carRequired: boolean;
 }
 
 export interface CreateProductDto {
@@ -24,6 +25,7 @@ export interface CreateProductDto {
   paymentLink?: string;
   quantity?: number;
   isFirstDriver?: boolean;
+  carRequired?: boolean;
 }
 
 export interface UpdateProductDto extends Partial<Omit<CreateProductDto, 'eventId'>> {}

@@ -32,8 +32,8 @@ export class OrderRepository {
       created_at: string;
       userId: string;
       isPaid: boolean;
-      car: string;
-      carClass: string;
+      car?: string | null;
+      carClass?: string | null;
       number: number;
       days: Array<{ date: string; description?: string }>;
       paymentMethod: string;

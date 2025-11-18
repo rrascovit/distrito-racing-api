@@ -32,3 +32,37 @@ CREATE INDEX IF NOT EXISTS idx_profiles_email ON profiles(email);
 -- 2. userId: Firebase Auth UID - usado para encontrar o perfil do usuário autenticado
 -- 3. O repository usa findByUserId(firebaseUid) para buscar perfis
 -- 4. O id é usado apenas para referências internas (foreign keys, etc)
+
+-- ============================================
+-- MIGRATION: Adicionar campo carRequired em products
+-- Data: 2025-11-18
+-- ============================================
+
+-- Adicionar coluna car_required com default true (retrocompatibilidade)
+ALTER TABLE products 
+ADD COLUMN IF NOT EXISTS "carRequired" BOOLEAN DEFAULT true;
+
+-- Atualizar produtos de segundo piloto para não exigir carro
+UPDATE products 
+SET "carRequired" = false 
+WHERE "isFirstDriver" = false;
+
+-- Comentário sobre carRequired:
+-- - true: Produto requer carro cadastrado (track day físico, primeiro piloto)
+-- - false: Produto não requer carro (simulador, workshops, segundo piloto)
+
+-- ============================================
+-- MIGRATION: Tornar car e carClass opcionais em orders
+-- Data: 2025-11-18
+-- ============================================
+
+-- Permitir NULL nas colunas car e carClass para eventos que não requerem carro
+ALTER TABLE orders 
+ALTER COLUMN car DROP NOT NULL;
+
+ALTER TABLE orders 
+ALTER COLUMN "carClass" DROP NOT NULL;
+
+-- Comentário:
+-- Eventos como simulador ou workshops não precisam de informações do carro
+-- O frontend enviará car e carClass como null quando carRequired = false
