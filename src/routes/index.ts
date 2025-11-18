@@ -5,6 +5,7 @@ import eventRoutes from './event.routes';
 import productRoutes from './product.routes';
 import orderRoutes from './order.routes';
 import addressRoutes from './address.routes';
+import storageRoutes from './storage.routes';
 
 const router = Router();
 
@@ -15,6 +16,7 @@ router.use('/events', eventRoutes);
 router.use('/products', productRoutes);
 router.use('/orders', orderRoutes);
 router.use('/addresses', addressRoutes);
+router.use('/storage', storageRoutes);
 
 // Rota de health check
 router.get('/health', (req, res) => {
