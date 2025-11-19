@@ -15,6 +15,17 @@ export class ProductController {
     }
   }
 
+  async getAllProductsByEvent(req: AuthRequest, res: Response): Promise<void> {
+    try {
+      const eventId = parseInt(req.params.eventId);
+      const products = await productRepository.findAllByEventId(eventId);
+      res.json(products);
+    } catch (error) {
+      console.error('Error getting all products:', error);
+      res.status(500).json({ error: 'Erro ao buscar produtos' });
+    }
+  }
+
   async getProductById(req: Request, res: Response): Promise<void> {
     try {
       const productId = parseInt(req.params.id);

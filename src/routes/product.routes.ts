@@ -22,6 +22,7 @@ router.get('/event/:eventId', optionalAuthenticate, productController.getProduct
 router.get('/:id', optionalAuthenticate, productController.getProductById.bind(productController));
 
 // Rotas protegidas (admin)
+router.get('/admin/event/:eventId', authenticate, requireAdmin, productController.getAllProductsByEvent.bind(productController));
 router.post(
   '/',
   authenticate,

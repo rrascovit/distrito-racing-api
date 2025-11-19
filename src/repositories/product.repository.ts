@@ -33,6 +33,21 @@ export class ProductRepository {
     return availableProducts;
   }
 
+  async findAllByEventId(eventId: number): Promise<Product[]> {
+    const { data, error } = await supabase
+      .from(this.tableName)
+      .select('*')
+      .eq('eventId', eventId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error finding all products:', error);
+      return [];
+    }
+
+    return data as Product[];
+  }
+
   async findById(id: number): Promise<Product | null> {
     const { data, error } = await supabase
       .from(this.tableName)
