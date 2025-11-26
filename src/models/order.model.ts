@@ -18,6 +18,17 @@ export interface Order {
   eventName?: string;
   trackName?: string;
   eventDates?: string[];
+  eventDescription?: string;
+  eventImage?: string | null;
+  trackImage?: string | null;
+  regulation?: string | null;
+  result?: string | null;
+  resultClass?: string | null;
+  resultLap?: string | null;
+  productName?: string;
+  productTier?: string;
+  productPrice?: number;
+  productIsFirstDriver?: boolean;
   profile?: {
     name: string;
     email: string;

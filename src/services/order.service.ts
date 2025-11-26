@@ -51,13 +51,7 @@ export class OrderService {
   }
 
   async getOrderById(orderId: number, userId: string): Promise<Order | null> {
-    const order = await orderRepository.findById(orderId);
-
-    if (!order || order.userId !== userId) {
-      return null;
-    }
-
-    return order;
+    return await orderRepository.findByIdDetailed(orderId, userId);
   }
 
   async updatePaymentStatus(

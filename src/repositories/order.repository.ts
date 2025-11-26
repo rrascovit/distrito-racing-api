@@ -16,7 +16,8 @@ export class OrderRepository {
       .from(this.tableName)
       .select(`
         *,
-        event:events(id, title, subtitle, possibleDays)
+        event:events(id, title, subtitle, possibleDays),
+        order_products(productId, products(name))
       `)
       .eq('userId', userId)
       .order('created_at', { ascending: false });
@@ -46,6 +47,10 @@ export class OrderRepository {
         subtitle?: string;
         possibleDays?: Array<{ date: string; description?: string }>;
       } | null;
+      order_products?: Array<{
+        productId: number;
+        products: { name: string } | null;
+      }>;
     }
 
     const orders = data?.map((order: OrderWithEvent) => ({
@@ -53,6 +58,7 @@ export class OrderRepository {
       eventName: order.event?.title || 'Evento desconhecido',
       trackName: order.event?.subtitle || '',
       eventDates: order.event?.possibleDays?.map(d => d.date) || [],
+      productName: order.order_products?.[0]?.products?.name || 'Produto não encontrado',
     })) || [];
 
     return orders as Order[];
@@ -71,6 +77,114 @@ export class OrderRepository {
     }
 
     return data as Order;
+  }
+
+  async findByIdDetailed(id: number, userId: string): Promise<Order | null> {
+    const { data, error } = await supabase
+      .from(this.tableName)
+      .select(`
+        *,
+        event:events(
+          id,
+          title,
+          subtitle,
+          description,
+          possibleDays,
+          image,
+          trackImage,
+          regulation,
+          result,
+          resultClass,
+          resultLap
+        ),
+        order_products(
+          id,
+          productId,
+          priceCents,
+          quantity,
+          products(
+            id,
+            name,
+            tier,
+            priceCents,
+            isFirstDriver
+          )
+        )
+      `)
+      .eq('id', id)
+      .eq('userId', userId)
+      .single();
+
+    if (error) {
+      console.error('Error finding order with details:', error);
+      return null;
+    }
+
+    // Transform data to flatten nested structures
+    interface OrderDetailed {
+      id: number;
+      created_at: string;
+      userId: string;
+      isPaid: boolean;
+      car?: string | null;
+      carClass?: string | null;
+      number?: number | null;
+      days: Array<{ date: string; description?: string }>;
+      paymentMethod: string;
+      firstDriverName?: string;
+      eventId: number;
+      isFirstDriver: boolean;
+      event?: {
+        id: number;
+        title: string;
+        subtitle?: string;
+        description?: string;
+        possibleDays?: Array<{ date: string; description?: string }> | string[];
+        image?: string | null;
+        trackImage?: string | null;
+        regulation?: string | null;
+        result?: string | null;
+        resultClass?: string | null;
+        resultLap?: string | null;
+      };
+      order_products?: Array<{
+        id: number;
+        productId: number;
+        priceCents: number;
+        quantity: number;
+        products: {
+          id: number;
+          name: string;
+          tier?: string;
+          priceCents: number;
+          isFirstDriver: boolean;
+        } | null;
+      }>;
+    }
+
+    const order = data as OrderDetailed;
+
+    // Flatten event data
+    const transformedOrder = {
+      ...order,
+      eventName: order.event?.title || 'Evento desconhecido',
+      trackName: order.event?.subtitle || '',
+      eventDescription: order.event?.description || '',
+      eventDates: order.event?.possibleDays || [],
+      eventImage: order.event?.image || null,
+      trackImage: order.event?.trackImage || null,
+      regulation: order.event?.regulation || null,
+      result: order.event?.result || null,
+      resultClass: order.event?.resultClass || null,
+      resultLap: order.event?.resultLap || null,
+      // Flatten product data (first product)
+      productName: order.order_products?.[0]?.products?.name || 'Produto não encontrado',
+      productTier: order.order_products?.[0]?.products?.tier || '',
+      productPrice: order.order_products?.[0]?.priceCents || 0,
+      productIsFirstDriver: order.order_products?.[0]?.products?.isFirstDriver ?? true,
+    };
+
+    return transformedOrder as Order;
   }
 
   async findByEventId(eventId: number): Promise<Order[]> {
