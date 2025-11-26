@@ -56,7 +56,7 @@ export class OrderRepository {
     const orders = data?.map((order: OrderWithEvent) => ({
       ...order,
       eventName: order.event?.title || 'Evento desconhecido',
-      trackName: order.event?.subtitle || '',
+      subtitle: order.event?.subtitle || '',
       eventDates: order.event?.possibleDays?.map(d => d.date) || [],
       productName: order.order_products?.[0]?.products?.name || 'Produto não encontrado',
     })) || [];
@@ -168,7 +168,7 @@ export class OrderRepository {
     const transformedOrder = {
       ...order,
       eventName: order.event?.title || 'Evento desconhecido',
-      trackName: order.event?.subtitle || '',
+      subtitle: order.event?.subtitle || '',
       eventDescription: order.event?.description || '',
       eventDates: order.event?.possibleDays || [],
       eventImage: order.event?.image || null,

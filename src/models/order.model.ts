@@ -16,7 +16,7 @@ export interface Order {
   isFirstDriver: boolean;
   // Additional fields from joins
   eventName?: string;
-  trackName?: string;
+  subtitle?: string;
   eventDates?: string[];
   eventDescription?: string;
   eventImage?: string | null;
