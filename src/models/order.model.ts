@@ -45,7 +45,7 @@ export interface CreateOrderDto {
     date: string;
     description?: string;
   }>;
-  paymentMethod: string;
+  paymentMethod?: string;
   firstDriverName?: string;
   eventId: number;
   isFirstDriver: boolean;

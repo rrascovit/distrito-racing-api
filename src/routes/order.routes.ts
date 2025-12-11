@@ -13,7 +13,7 @@ const createOrderValidation = [
   body('carClass').optional({ nullable: true }).isString().withMessage('Classe do carro deve ser uma string quando fornecida'),
   body('number').optional({ nullable: true }).isInt().withMessage('Número deve ser um inteiro quando fornecido'),
   body('days').isArray().withMessage('Dias é obrigatório'),
-  body('paymentMethod').notEmpty().withMessage('Método de pagamento é obrigatório'),
+  body('paymentMethod').optional().isString().withMessage('Método de pagamento deve ser uma string quando fornecido'),
   body('eventId').isInt().withMessage('ID do evento é obrigatório'),
   body('isFirstDriver').isBoolean().withMessage('Indicação de primeiro piloto é obrigatória'),
   body('productIds').isArray().withMessage('IDs dos produtos são obrigatórios'),

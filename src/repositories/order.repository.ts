@@ -84,6 +84,14 @@ export class OrderRepository {
       .from(this.tableName)
       .select(`
         *,
+        profile:profiles!orders_userId_fkey(
+          id,
+          name,
+          email,
+          cpf,
+          phone,
+          birthdate
+        ),
         event:events(
           id,
           title,
@@ -211,6 +219,7 @@ export class OrderRepository {
       .insert({
         userId,
         ...orderData,
+        paymentMethod: orderData.paymentMethod || 'Pendente', // Valor padrão
       })
       .select()
       .single();
