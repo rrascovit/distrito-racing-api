@@ -29,6 +29,8 @@ export interface Order {
   productTier?: string;
   productPrice?: number;
   productIsFirstDriver?: boolean;
+  productFinalDate?: string; // Data limite para pagamento
+  totalPriceCents?: number; // Valor total da order (soma de todos os produtos)
   profile?: {
     name: string;
     email: string;

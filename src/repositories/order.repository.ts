@@ -17,7 +17,7 @@ export class OrderRepository {
       .select(`
         *,
         event:events(id, title, subtitle, possibleDays),
-        order_products(productId, products(name))
+        order_products(productId, priceCents, products(name, priceCents, finalDate))
       `)
       .eq('userId', userId)
       .order('created_at', { ascending: false });
@@ -49,17 +49,36 @@ export class OrderRepository {
       } | null;
       order_products?: Array<{
         productId: number;
-        products: { name: string } | null;
+        priceCents: number;
+        products: { name: string; priceCents: number; finalDate?: string } | null;
       }>;
     }
 
-    const orders = data?.map((order: OrderWithEvent) => ({
-      ...order,
-      eventName: order.event?.title || 'Evento desconhecido',
-      subtitle: order.event?.subtitle || '',
-      eventDates: order.event?.possibleDays?.map(d => d.date) || [],
-      productName: order.order_products?.[0]?.products?.name || 'Produto não encontrado',
-    })) || [];
+    const orders = data?.map((order: OrderWithEvent) => {
+      // Calcular total somando todos os produtos
+      const totalPriceCents = order.order_products?.reduce(
+        (sum, op) => sum + (op.priceCents || 0), 0
+      ) || 0;
+      
+      // Pegar a data final mais recente dos produtos (para validação)
+      const productFinalDates = order.order_products
+        ?.map(op => op.products?.finalDate)
+        .filter((d): d is string => !!d) || [];
+      const productFinalDate = productFinalDates.length > 0 
+        ? productFinalDates.sort().reverse()[0]  // Pega a data mais distante
+        : undefined;
+
+      return {
+        ...order,
+        eventName: order.event?.title || 'Evento desconhecido',
+        subtitle: order.event?.subtitle || '',
+        eventDates: order.event?.possibleDays?.map(d => d.date) || [],
+        productName: order.order_products?.[0]?.products?.name || 'Produto não encontrado',
+        productPrice: order.order_products?.[0]?.priceCents || 0,
+        totalPriceCents,
+        productFinalDate
+      };
+    }) || [];
 
     return orders as Order[];
   }
@@ -351,6 +370,98 @@ export class OrderRepository {
     // Number is available if it doesn't exist in the list
     return !numberExists;
   }
+
+  /**
+   * Busca order pelo ID do pagamento do Mercado Pago
+   */
+  async findByMpPaymentId(mpPaymentId: string): Promise<Order | null> {
+    const { data, error } = await supabase
+      .from(this.tableName)
+      .select('*')
+      .eq('mpPaymentId', mpPaymentId)
+      .single();
+
+    if (error) {
+      console.error('Error finding order by mpPaymentId:', error);
+      return null;
+    }
+
+    return data as Order;
+  }
+
+  /**
+   * Atualiza informações de pagamento da order
+   */
+  async updatePaymentInfo(
+    id: number, 
+    userId: string, 
+    paymentInfo: {
+      mpPaymentId?: string;
+      mpStatus?: string;
+      mpStatusDetail?: string;
+      pixQrCode?: string;
+      pixQrCodeBase64?: string;
+      boletoUrl?: string;
+      boletoBarcode?: string;
+      paymentExpiresAt?: string;
+      isPaid?: boolean;
+    }
+  ): Promise<Order | null> {
+    const { data, error } = await supabase
+      .from(this.tableName)
+      .update(paymentInfo)
+      .eq('id', id)
+      .eq('userId', userId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating payment info:', error);
+      throw new Error('Erro ao atualizar informações de pagamento');
+    }
+
+    return data as Order;
+  }
+
+  /**
+   * Calcula o valor total da order (soma dos produtos)
+   */
+  async getOrderTotalCents(orderId: number): Promise<number> {
+    const { data, error } = await supabase
+      .from(this.orderProductsTableName)
+      .select('priceCents')
+      .eq('orderId', orderId);
+
+    if (error) {
+      console.error('Error getting order total:', error);
+      return 0;
+    }
+
+    return data?.reduce((sum, item) => sum + (item.priceCents || 0), 0) || 0;
+  }
+
+  /**
+   * Busca order com dados completos para pagamento
+   */
+  async findByIdForPayment(id: number, userId: string): Promise<Order | null> {
+    const { data, error } = await supabase
+      .from(this.tableName)
+      .select(`
+        *,
+        profile:profiles!orders_userId_fkey(name, email, phone, cpf)
+      `)
+      .eq('id', id)
+      .eq('userId', userId)
+      .single();
+
+    if (error) {
+      console.error('Error finding order for payment:', error);
+      return null;
+    }
+
+    return data as Order;
+  }
 }
 
-export default new OrderRepository();
+export const orderRepository = new OrderRepository();
+export default orderRepository;

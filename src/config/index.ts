@@ -16,6 +16,11 @@ export const config = {
     anonKey: process.env.SUPABASE_ANON_KEY || '',
     serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
   },
+  mercadoPago: {
+    accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN || '',
+    publicKey: process.env.MERCADO_PAGO_PUBLIC_KEY || '',
+    webhookSecret: process.env.MERCADO_PAGO_WEBHOOK_SECRET || '',
+  },
 };
 
 export default config;
