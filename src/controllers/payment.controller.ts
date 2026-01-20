@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { AuthRequest } from '../middlewares/auth.middleware';
 import { paymentService } from '../services/payment.service';
 import { orderRepository } from '../repositories/order.repository';
-import { CreatePaymentRequest } from '../models/payment.model';
 
 class PaymentController {
   /**
@@ -16,8 +15,16 @@ class PaymentController {
         orderId, 
         paymentMethodType, 
         payer, 
-        card 
-      } = req.body as CreatePaymentRequest;
+        card: rawCard 
+      } = req.body;
+
+      // Normalizar dados do cartão (frontend envia camelCase, backend espera snake_case)
+      const card = rawCard ? {
+        token: rawCard.token,
+        installments: rawCard.installments || 1,
+        payment_method_id: rawCard.paymentMethodId || rawCard.payment_method_id,
+        issuer_id: rawCard.issuerId || rawCard.issuer_id
+      } : undefined;
 
       // Validar dados obrigatórios
       if (!orderId || !paymentMethodType || !payer) {
