@@ -8,6 +8,7 @@ import addressRoutes from './address.routes';
 import storageRoutes from './storage.routes';
 import paymentRoutes from './payment.routes';
 import webhookRoutes from './webhook.routes';
+import cbaRoutes from './cba.routes';
 
 const router = Router();
 
@@ -21,6 +22,7 @@ router.use('/addresses', addressRoutes);
 router.use('/storage', storageRoutes);
 router.use('/payments', paymentRoutes);
 router.use('/webhooks', webhookRoutes);
+router.use('/cba', cbaRoutes);
 
 // Rota de health check
 router.get('/health', (req, res) => {

@@ -14,6 +14,13 @@ export interface Order {
   firstDriverName?: string;
   eventId: number;
   isFirstDriver: boolean;
+  // Campos CBA (Confederação Brasileira de Automobilismo)
+  cbaMatricula?: string | null;
+  cbaCategoria?: string | null;
+  cbaFederacao?: string | null;
+  cbaAno?: number | null;
+  cbaSituacao?: string | null;
+  cbaVerificadoEm?: string | null;
   // Additional fields from joins
   eventName?: string;
   subtitle?: string;
@@ -52,6 +59,13 @@ export interface CreateOrderDto {
   eventId: number;
   isFirstDriver: boolean;
   productIds: number[]; // IDs dos produtos associados ao pedido
+  // Campos CBA opcionais
+  cbaMatricula?: string | null;
+  cbaCategoria?: string | null;
+  cbaFederacao?: string | null;
+  cbaAno?: number | null;
+  cbaSituacao?: string | null;
+  cbaVerificadoEm?: string | null;
 }
 
 export interface UpdateOrderDto {
