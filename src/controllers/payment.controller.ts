@@ -71,7 +71,8 @@ class PaymentController {
         boletoUrl: paymentResponse.external_resource_url,
         boletoBarcode: paymentResponse.barcode,
         paymentExpiresAt: paymentResponse.date_of_expiration,
-        isPaid
+        isPaid,
+        paymentMethod: paymentMethodType
       });
 
       // Retornar resposta apropriada

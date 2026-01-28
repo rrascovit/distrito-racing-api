@@ -405,6 +405,7 @@ export class OrderRepository {
       boletoBarcode?: string;
       paymentExpiresAt?: string;
       isPaid?: boolean;
+      paymentMethod?: string;
     }
   ): Promise<Order | null> {
     const { data, error } = await supabase
