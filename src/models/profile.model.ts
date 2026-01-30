@@ -12,6 +12,7 @@ export interface Profile {
   birthdate?: string;
   emergencyContactName?: string;
   emergencyContactPhone?: string;
+  healthInsurance?: string; // Plano de saúde
   categoryMembership?: string;
   hasMembership?: string;
 }
@@ -28,6 +29,7 @@ export interface CreateProfileDto {
   birthdate?: string;
   emergencyContactName?: string;
   emergencyContactPhone?: string;
+  healthInsurance?: string;
   categoryMembership?: string;
   hasMembership?: string;
 }

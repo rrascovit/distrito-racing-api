@@ -211,7 +211,7 @@ export class OrderRepository {
       .from(this.tableName)
       .select(`
         *,
-        profile:profiles!orders_userId_fkey(name, email, phone, cpf)
+        profile:profiles!orders_userId_fkey(name, email, phone, cpf, "healthInsurance", "emergencyContactName", "emergencyContactPhone")
       `)
       .eq('eventId', eventId)
       .order('created_at', { ascending: false });
